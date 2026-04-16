@@ -2,6 +2,7 @@ import streamlit as st
 import joblib
 import pickle
 import numpy as np
+import pandas as pd
 
 import psycopg2
 # Fetch variables
@@ -162,9 +163,20 @@ if model is not None:
     
     historial = obtener_historial()
     
+    
+    
+    st.header("📜 Historial de Predicciones")
+    
+    historial = obtener_historial()
+    
     if historial:
-        for fila in historial:
-            st.write(fila)
+        df = pd.DataFrame(
+            historial,
+            columns=["ID", "Fecha", "Longitud Pétalo", "Longitud Sépalo", "Ancho Sépalo", "Ancho Pétalo", "Predicción"]
+        )
+    
+        st.dataframe(df, use_container_width=True)
+    
     else:
         st.write("No hay registros")
     
