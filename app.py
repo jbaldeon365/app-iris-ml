@@ -40,6 +40,62 @@ except Exception as e:
     st.write(str(e))
 
 
+def guardar_prediccion(l_p, l_s, a_s, a_p, prediccion):
+    try:
+        connection = psycopg2.connect(
+            user=USER,
+            password=PASSWORD,
+            host=HOST,
+            port=PORT,
+            dbname=DBNAME
+        )
+
+        cursor = connection.cursor()
+
+        query = """
+        INSERT INTO tb_iris (l_p, l_s, a_s, a_p, prediccion)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+
+        values = (l_p, l_s, a_s, a_p, prediccion)
+
+        cursor.execute(query, values)
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+    except Exception as e:
+        st.error(f"Error guardando datos: {e}")
+
+def obtener_historial():
+    try:
+        connection = psycopg2.connect(
+            user=USER,
+            password=PASSWORD,
+            host=HOST,
+            port=PORT,
+            dbname=DBNAME
+        )
+
+        cursor = connection.cursor()
+
+        query = """
+        SELECT * FROM tb_iris
+        ORDER BY created_at DESC
+        """
+
+        cursor.execute(query)
+        datos = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return datos
+
+    except Exception as e:
+        st.error(f"Error leyendo historial: {e}")
+        return []
 
 # Función para cargar los modelos
 @st.cache_resource
@@ -85,6 +141,14 @@ if model is not None:
         # Mostrar resultado
         target_names = model_info['target_names']
         predicted_species = target_names[prediction]
+
+        guardar_prediccion(
+            petal_length,
+            sepal_length,
+            sepal_width,
+            petal_width,
+            predicted_species
+        )
         
         st.success(f"Especie predicha: **{predicted_species}**")
         st.write(f"Confianza: **{max(probabilities):.1%}**")
@@ -93,3 +157,14 @@ if model is not None:
         st.write("Probabilidades:")
         for species, prob in zip(target_names, probabilities):
             st.write(f"- {species}: {prob:.1%}")
+
+    st.header("📜 Historial de Predicciones")
+    
+    historial = obtener_historial()
+    
+    if historial:
+        for fila in historial:
+            st.write(fila)
+    else:
+        st.write("No hay registros")
+    
