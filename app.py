@@ -159,11 +159,6 @@ if model is not None:
         for species, prob in zip(target_names, probabilities):
             st.write(f"- {species}: {prob:.1%}")
 
-    st.header("📜 Historial de Predicciones")
-    
-    historial = obtener_historial()
-    
-    
     
     st.header("📜 Historial de Predicciones")
     
