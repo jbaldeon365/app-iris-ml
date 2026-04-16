@@ -53,7 +53,7 @@ def guardar_prediccion(l_p, l_s, a_s, a_p, prediccion):
         cursor = connection.cursor()
 
         query = """
-        INSERT INTO tb_iris (l_p, l_s, a_s, a_p, prediccion)
+        INSERT INTO ml.tb_iris (l_p, l_s, a_s, a_p, prediccion)
         VALUES (%s, %s, %s, %s, %s)
         """
 
@@ -81,7 +81,7 @@ def obtener_historial():
         cursor = connection.cursor()
 
         query = """
-        SELECT * FROM tb_iris
+        SELECT * FROM ml.tb_iris
         ORDER BY created_at DESC
         """
 
