@@ -169,8 +169,10 @@ if model is not None:
             columns=["ID", "Fecha", "Longitud Pétalo", "Longitud Sépalo", "Ancho Sépalo", "Ancho Pétalo", "Predicción"]
         )
     
-        st.dataframe(df, use_container_width=True)
+        df["Fecha"] = pd.to_datetime(df["Fecha"]).dt.tz_convert("America/Lima")
+        df["Fecha"] = df["Fecha"].dt.strftime("%d-%m-%Y %H:%M:%S")
+    
+        st.dataframe(df, use_container_width=True, hide_index=True)
     
     else:
         st.write("No hay registros")
-    
